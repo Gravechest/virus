@@ -26,5 +26,22 @@ int main() {
 	for(;;){
 		scanf("%s",command);
 		send(client,command,sizeof(command),0);
+		if(command[0] == 'e'){
+			int sz = 0;
+			for(;command[sz+2] != '0';sz++){}
+			char *nm = calloc(sz+1,1);
+			memcpy(nm,command+2,sz);
+			HANDLE file = CreateFileA(nm,GENERIC_READ,0,0,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0);
+			if(GetLastError()){break;}
+			int fsize = GetFileSize(file,0);
+			char *buf = malloc(fsize);
+			ReadFile(file,buf,fsize,0,0);
+			char sz2[4] = {fsize,fsize >> 8,fsize >> 16,fsize >> 24};
+			send(client,sz2,4,0);
+			send(client,buf,fsize,0);
+			CloseHandle(file);
+			free(buf);
+		}
+		memset(command,0,sizeof(command));
 	}
 }
